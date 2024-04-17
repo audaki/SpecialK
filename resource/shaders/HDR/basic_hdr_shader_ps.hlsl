@@ -246,7 +246,17 @@ main (PS_INPUT input) : SV_TARGET
       hdr_color.g *= (orig_color.g >= FLT_EPSILON);
       hdr_color.b *= (orig_color.b >= FLT_EPSILON);
 
-      hdr_color = FinalOutput (hdr_color);
+      //hdr_color = FinalOutput (hdr_color);
+
+
+      hdr_color.rgb =
+        clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
+
+      hdr_color.rgb *=
+        smoothstep ( 0.006978,
+                     0.016667, hdr_color.rgb);
+
+      hdr_color.a = 1.0;
     }
 
     int cs = visualFunc.x - VISUALIZE_REC709_GAMUT;
@@ -255,14 +265,14 @@ main (PS_INPUT input) : SV_TARGET
     float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
     float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
 
-    float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
+    //float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
     //float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[cs], hdr_color.rgb);
-    //float3 vColor_XYZ = RGB_to_XYZ(hdr_color.rgb);
+    float3 vColor_XYZ = RGB_to_XYZ(hdr_color.rgb);
 
-    //float3 vColor_xyY = float3 ( vColor_XYZ.x / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ),
-    //         vColor_XYZ.y / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ),
-    //           1.0 - ( vColor_XYZ.x / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) )
-    //               - ( vColor_XYZ.y / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) ) );
+    float3 vColor_xyY = float3 ( vColor_XYZ.x / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ),
+             vColor_XYZ.y / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ),
+               1.0 - ( vColor_XYZ.x / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) )
+                   - ( vColor_XYZ.y / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) ) );
 
 
 
