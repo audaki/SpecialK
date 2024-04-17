@@ -233,23 +233,25 @@ main (PS_INPUT input) : SV_TARGET
     }
 
     // Copied from real output, does this change anything?
-//    {
-//      hdr_color =
-//        float4 (
-//          Clamp_scRGB_StripNaN (hdr_color.rgb),
-//                      saturate (hdr_color.a)
-//                      );
-//
-//      hdr_color.r *= (orig_color.r >= FLT_EPSILON);
-//      hdr_color.g *= (orig_color.g >= FLT_EPSILON);
-//      hdr_color.b *= (orig_color.b >= FLT_EPSILON);
-//    }
+    {
+      hdr_color =
+        float4 (
+          Clamp_scRGB_StripNaN (hdr_color.rgb),
+                      saturate (hdr_color.a)
+                      );
+
+      hdr_color.r *= (orig_color.r >= FLT_EPSILON);
+      hdr_color.g *= (orig_color.g >= FLT_EPSILON);
+      hdr_color.b *= (orig_color.b >= FLT_EPSILON);
+
+      hdr_color = FinalOutput (hdr_color);
+    }
 
     int cs = visualFunc.x - VISUALIZE_REC709_GAMUT;
 
-    float3 r = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(1.f, 0.f, 0.f));
-    float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
-    float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
+    float3 r = SK_Color_xyY_from_RGB(_ColorSpaces[1], float3(1.f, 0.f, 0.f));
+    float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[1], float3(0.f, 1.f, 0.f));
+    float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[1], float3(0.f, 0.f, 1.f));
 
     float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
 
@@ -268,18 +270,19 @@ main (PS_INPUT input) : SV_TARGET
       }
       else
       {
+        vDist = (hdrLuminance_MaxAvg / 320.0) * Luminance(hdr_color.rgb);
         // colored = overshoot
-        float3 fDistField =
-          float3(
-            distance(r, vColor_xyY),
-            distance(g, vColor_xyY),
-            distance(b, vColor_xyY)
-          );
-
-        fDistField.x = IsNan(fDistField.x) ? 0 : fDistField.x;
-        fDistField.y = IsNan(fDistField.y) ? 0 : fDistField.y;
-        fDistField.z = IsNan(fDistField.z) ? 0 : fDistField.z;
-        vDist = fDistField;
+//        float3 fDistField =
+//          float3(
+//            distance(r, vColor_xyY),
+//            distance(g, vColor_xyY),
+//            distance(b, vColor_xyY)
+//          );
+//
+//        fDistField.x = IsNan(fDistField.x) ? 0 : fDistField.x;
+//        fDistField.y = IsNan(fDistField.y) ? 0 : fDistField.y;
+//        fDistField.z = IsNan(fDistField.z) ? 0 : fDistField.z;
+//        vDist = fDistField;
       }
     }
 
