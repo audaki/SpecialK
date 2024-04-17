@@ -249,9 +249,9 @@ main (PS_INPUT input) : SV_TARGET
 
     int cs = visualFunc.x - VISUALIZE_REC709_GAMUT;
 
-    float3 r = SK_Color_XYZ_from_RGB(_ColorSpaces[1], float3(1.f, 0.f, 0.f));
-    float3 g = SK_Color_XYZ_from_RGB(_ColorSpaces[1], float3(0.f, 1.f, 0.f));
-    float3 b = SK_Color_XYZ_from_RGB(_ColorSpaces[1], float3(0.f, 0.f, 1.f));
+    float3 r = SK_Color_XYZ_from_RGB(_ColorSpaces[cs], float3(1.f, 0.f, 0.f));
+    float3 g = SK_Color_XYZ_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
+    float3 b = SK_Color_XYZ_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
 
     float3 vColor_xyY = SK_Color_XYZ_from_RGB(_ColorSpaces[0], hdr_color.rgb);
 
@@ -260,13 +260,14 @@ main (PS_INPUT input) : SV_TARGET
     };
 
 
-    float3 vDist;
+    float3 output_color;
     {
       bool bContained = SK_Triangle_ContainsPoint(vColor_xyY, vTriangle);
       if (bContained) // && vColor_xyY.x != vColor_xyY.y)
       {
         // grey = no overshoot
-        vDist = (hdrLuminance_MaxAvg / 320.0) * Luminance(hdr_color.rgb);
+        output_color = (hdrLuminance_MaxAvg / 320.0) * Luminance(hdr_color.rgb);
+        output_color = float3(0.1, 0.1, 0.1);
       }
       else
       {
@@ -281,11 +282,12 @@ main (PS_INPUT input) : SV_TARGET
         fDistField.x = IsNan(fDistField.x) ? 0 : fDistField.x;
         fDistField.y = IsNan(fDistField.y) ? 0 : fDistField.y;
         fDistField.z = IsNan(fDistField.z) ? 0 : fDistField.z;
-        vDist = fDistField;
+        output_color = fDistField;
+        output_color = float3(0.7, 0.7, 0.7)
       }
     }
 
-    return FinalOutput(float4 (vDist, 1.0f));
+    return FinalOutput(float4 (output_color, 1.0f));
   }
 
 
