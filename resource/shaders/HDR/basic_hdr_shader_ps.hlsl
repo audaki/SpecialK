@@ -249,11 +249,11 @@ main (PS_INPUT input) : SV_TARGET
 
     int cs = visualFunc.x - VISUALIZE_REC709_GAMUT;
 
-    float3 r = SK_Color_XYZ_from_RGB(_ColorSpaces[cs], float3(1.f, 0.f, 0.f));
-    float3 g = SK_Color_XYZ_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
-    float3 b = SK_Color_XYZ_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
+    float3 r = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(1.f, 0.f, 0.f));
+    float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
+    float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
 
-    float3 vColor_xyY = SK_Color_XYZ_from_RGB(_ColorSpaces[0], hdr_color.rgb);
+    float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
 
     float3 vTriangle [] = {
       r, g, b
@@ -267,7 +267,7 @@ main (PS_INPUT input) : SV_TARGET
       {
         // grey = no overshoot
         output_color = (hdrLuminance_MaxAvg / 320.0) * Luminance(hdr_color.rgb);
-        output_color = float3(0.1, 0.1, 0.1);
+        output_color = float3(0.01, 0.01, 0.01);
       }
       else
       {
@@ -283,7 +283,7 @@ main (PS_INPUT input) : SV_TARGET
         fDistField.y = IsNan(fDistField.y) ? 0 : fDistField.y;
         fDistField.z = IsNan(fDistField.z) ? 0 : fDistField.z;
         output_color = fDistField;
-        output_color = float3(0.7, 0.7, 0.7);
+        output_color = float3(0.8, 0.8, 0.8);
       }
     }
 
