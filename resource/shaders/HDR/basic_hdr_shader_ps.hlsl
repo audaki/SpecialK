@@ -262,10 +262,7 @@ main (PS_INPUT input) : SV_TARGET
                1.0 - ( vColor_XYZ.x / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) )
                    - ( vColor_XYZ.y / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) ) );
 
-    r.z = 0;
-    g.z = 0;
-    b.z = 0;
-    vColor_xyY.z = 0;
+
 
     float3 vTriangle [] = {
       r, g, b
