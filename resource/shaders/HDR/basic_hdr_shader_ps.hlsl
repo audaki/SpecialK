@@ -251,7 +251,7 @@ main (PS_INPUT input) : SV_TARGET
     float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
     float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
 
-    float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], normalize(hdr_color.rgb));
+    float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
 
     float3 vTriangle [] = {
       r, g, b
@@ -260,7 +260,8 @@ main (PS_INPUT input) : SV_TARGET
 
     float3 vDist;
     {
-      if (SK_Triangle_ContainsPoint(vColor_xyY, vTriangle))// && vColor_xyY.x != vColor_xyY.y)
+      bool bContained = SK_Triangle_ContainsPoint(vColor_xyY, vTriangle);
+      if (bContained) // && vColor_xyY.x != vColor_xyY.y)
       {
         // grey = no overshoot
         vDist = (hdrLuminance_MaxAvg / 320.0) * Luminance(hdr_color.rgb);
