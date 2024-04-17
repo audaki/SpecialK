@@ -288,7 +288,7 @@ main (PS_INPUT input) : SV_TARGET
         fDistField.y = IsNan(fDistField.y) ? 0 : fDistField.y;
         fDistField.z = IsNan(fDistField.z) ? 0 : fDistField.z;
         output_color = fDistField;
-        output_color = float3(0.7, 0.7, 0.7)
+        output_color = float3(0.7, 0.7, 0.7);
       }
     }
 
