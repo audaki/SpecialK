@@ -251,7 +251,7 @@ main (PS_INPUT input) : SV_TARGET
     float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
     float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
 
-    float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[cs], normalize(hdr_color.rgb));
+    float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], normalize(hdr_color.rgb));
 
     float3 vTriangle [] = {
       r, g, b
@@ -268,9 +268,9 @@ main (PS_INPUT input) : SV_TARGET
       {
         float3 fDistField =
           float3(
-            distance(r, vColor_xyY.r),
-            distance(g, vColor_xyY.g),
-            distance(b, vColor_xyY.b)
+            distance(r, vColor_xyY),
+            distance(g, vColor_xyY),
+            distance(b, vColor_xyY)
           );
 
         fDistField.x = IsNan(fDistField.x) ? 0 : fDistField.x;
