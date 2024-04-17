@@ -265,14 +265,11 @@ main (PS_INPUT input) : SV_TARGET
     float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
     float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
 
-    //float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
-    //float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[cs], hdr_color.rgb);
     float3 vColor_XYZ = RGB_to_XYZ(hdr_color.rgb);
+    float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
+    //float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[cs], hdr_color.rgb);
 
-    float3 vColor_xyY = float3 ( vColor_XYZ.x / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ),
-             vColor_XYZ.y / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ),
-               1.0 - ( vColor_XYZ.x / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) )
-                   - ( vColor_XYZ.y / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) ) );
+    //float3 vColor_xyY = float3 ( vColor_XYZ.x / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ), vColor_XYZ.y / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ), 1.0 - ( vColor_XYZ.x / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) ) - ( vColor_XYZ.y / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) ) );
 
 
 
