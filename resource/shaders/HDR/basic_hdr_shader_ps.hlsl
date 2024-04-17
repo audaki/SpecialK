@@ -853,11 +853,11 @@ float4 main (PS_INPUT input) : SV_TARGET
     }
 
     
-    color_out =
-      float4 (
-        Clamp_scRGB_StripNaN (color_out.rgb),
-                    saturate (hdr_color.a)
-             );
+    //color_out =
+    //  float4 (
+    //    Clamp_scRGB_StripNaN (color_out.rgb),
+    //                saturate (hdr_color.a)
+    //         );
 
     color_out.r *= (orig_color.r >= FLT_EPSILON);
     color_out.g *= (orig_color.g >= FLT_EPSILON);
