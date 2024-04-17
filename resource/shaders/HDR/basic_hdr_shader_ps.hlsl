@@ -246,17 +246,10 @@ main (PS_INPUT input) : SV_TARGET
       hdr_color.g *= (orig_color.g >= FLT_EPSILON);
       hdr_color.b *= (orig_color.b >= FLT_EPSILON);
 
-      //hdr_color = FinalOutput (hdr_color);
+      hdr_color = FinalOutput (hdr_color);
 
-
-      hdr_color.rgb =
-        clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
-
-      hdr_color.rgb *=
-        smoothstep ( 0.006978,
-                     0.016667, hdr_color.rgb);
-
-      hdr_color.a = 1.0;
+      //hdr_color.rgb = clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
+      //hdr_color.rgb *= smoothstep (0.006978, 0.016667, hdr_color.rgb);
     }
 
     int cs = visualFunc.x - VISUALIZE_REC709_GAMUT;
@@ -273,10 +266,9 @@ main (PS_INPUT input) : SV_TARGET
 
 
 
-    float3 vTriangle [] = {
-      r, g, b
-    };
-
+    //float3 vTriangle[] = {r, g, b};
+    float3 vTriangle[] = {float3(5,5,0), float3(5,0,0), float3(0,0,0)};
+    vColor_xyY = float3(2,2,0);
 
     float3 output_color;
     {
