@@ -232,19 +232,6 @@ main (PS_INPUT input) : SV_TARGET
         expandGamut(hdr_color.rgb, hdrGamutExpansion);
     }
 
-    // Copied from real output, does this change anything?
-    {
-      hdr_color =
-        float4 (
-          Clamp_scRGB_StripNaN (hdr_color.rgb),
-                      saturate (hdr_color.a)
-                      );
-
-      hdr_color.r *= (orig_color.r >= FLT_EPSILON);
-      hdr_color.g *= (orig_color.g >= FLT_EPSILON);
-      hdr_color.b *= (orig_color.b >= FLT_EPSILON);
-    }
-
     int cs = visualFunc.x - VISUALIZE_REC709_GAMUT;
 
     float3 r = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(1.f, 0.f, 0.f));
