@@ -267,7 +267,6 @@ main (PS_INPUT input) : SV_TARGET
       {
         // grey = no overshoot
         output_color = (hdrLuminance_MaxAvg / 320.0) * Luminance(hdr_color.rgb);
-        output_color = float3(0.01, 0.01, 0.01);
       }
       else
       {
@@ -283,7 +282,9 @@ main (PS_INPUT input) : SV_TARGET
         fDistField.y = IsNan(fDistField.y) ? 0 : fDistField.y;
         fDistField.z = IsNan(fDistField.z) ? 0 : fDistField.z;
         output_color = fDistField;
-        output_color = float3(0.8, 0.8, 0.8);
+
+        output_color = (hdrLuminance_MaxAvg / 320.0) * Luminance(hdr_color.rgb);
+        output_color.r = 1;
       }
     }
 
