@@ -268,7 +268,7 @@ main (PS_INPUT input) : SV_TARGET
 
     //float3 vTriangle[] = {r, g, b};
     float3 vTriangle[] = {float3(5,5,0), float3(5,0,0), float3(0,0,0)};
-    vColor_xyY = float3(6,2,0);
+    vColor_xyY = float3(-0.1,2,0);
 
     float3 output_color;
     {
