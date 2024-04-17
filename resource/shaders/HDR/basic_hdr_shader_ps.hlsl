@@ -253,7 +253,7 @@ main (PS_INPUT input) : SV_TARGET
     float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
     float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
 
-    float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
+    float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[cs], hdr_color.rgb);
 
     r.z = 0;
     g.z = 0;
