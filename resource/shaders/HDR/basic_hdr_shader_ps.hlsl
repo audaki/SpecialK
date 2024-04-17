@@ -255,6 +255,11 @@ main (PS_INPUT input) : SV_TARGET
 
     float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
 
+    r.z = 0;
+    g.z = 0;
+    b.z = 0;
+    vColor_xyY.z = 0;
+
     float3 vTriangle [] = {
       r, g, b
     };
