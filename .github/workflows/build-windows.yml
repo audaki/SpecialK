@@ -34,12 +34,5 @@ jobs:
       with:
         name: SpecialK_${{ env.SK_VERSION }}_${{ env.SHORT_SHA }}
         path: |
-          ~\Documents\My Mods\SpecialK\*.dll
+          ~\Documents\My Mods\SpecialK\SpecialK64.dll
         if-no-files-found: error
-
-    - uses: actions/upload-artifact@v3
-      with:
-        name: SpecialK_${{ env.SK_VERSION }}_${{ env.SHORT_SHA }}_debug_symbols
-        path: |
-          ~\Documents\My Mods\SpecialK\*.pdb
-        if-no-files-found: warn
