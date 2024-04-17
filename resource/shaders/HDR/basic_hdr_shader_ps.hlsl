@@ -137,11 +137,6 @@ main (PS_INPUT input) : SV_TARGET
     } break;
   }
 
-  bool bIsHDR10 = false;
-
-  if (uiToneMapper == TONEMAP_HDR10_to_scRGB)
-       bIsHDR10 = true;
-
   float4 hdr_color =
     texMainScene.Sample ( sampler0,
                             input.uv );
@@ -161,92 +156,36 @@ main (PS_INPUT input) : SV_TARGET
     any (over_range.rgb);
 
 
-  hdr_color.rgb =
-    bIsHDR10 ?
-      REC2020toREC709 (RemoveREC2084Curve ( hdr_color.rgb )) :
-                         SK_ProcessColor4 ( hdr_color.rgba,
-                                            xRGB_to_Linear,
-                             sdrContentEOTF != 1.0f ).rgb;
+  hdr_color.rgb = SK_ProcessColor4 ( hdr_color.rgba, xRGB_to_Linear, sdrContentEOTF != 1.0f ).rgb;
 
-  if (! bIsHDR10)
+
+  // Clamp scRGB source image to Rec 709, unless using passthrough mode
+  if (input.color.x != 1.0)
   {
-    // Clamp scRGB source image to Rec 709, unless using passthrough mode
-    if (input.color.x != 1.0)
-    {
-      hdr_color.rgb =
-        Clamp_scRGB (hdr_color.rgb);
-    }
+    hdr_color.rgb =
+      Clamp_scRGB (hdr_color.rgb);
   }
 
 
-  if ( input.coverage.x < input.uv.x ||
-       input.coverage.y < input.uv.y )
+
+  if ( input.color.x < 0.0125f - FLT_EPSILON ||
+       input.color.x > 0.0125f + FLT_EPSILON )
   {
-    return
-      FinalOutput (float4 (hdr_color.rgb * sdrLuminance_White, 1.0f));
+    hdr_color.rgb = LinearToLogC (hdr_color.rgb);
+    hdr_color.rgb = Contrast     (hdr_color.rgb,
+            0.18f * (0.1f * input.color.x / 0.0125f) / 100.0f,
+                     (sdrLuminance_NonStd / 0.0125f) / 100.0f);
+    hdr_color.rgb = LogCToLinear (hdr_color.rgb);
   }
 
+  hdr_color =
+    SK_ProcessColor4 (hdr_color, uiToneMapper);
 
-  if (uiToneMapper != TONEMAP_HDR10_to_scRGB)
+  if (input.color.y != 1.0f)
   {
-    if ( input.color.x < 0.0125f - FLT_EPSILON ||
-         input.color.x > 0.0125f + FLT_EPSILON )
-    {
-      hdr_color.rgb = LinearToLogC (hdr_color.rgb);
-      hdr_color.rgb = Contrast     (hdr_color.rgb,
-              0.18f * (0.1f * input.color.x / 0.0125f) / 100.0f,
-                       (sdrLuminance_NonStd / 0.0125f) / 100.0f);
-      hdr_color.rgb = LogCToLinear (hdr_color.rgb);
-    }
-  }
-
-  if (uiToneMapper != TONEMAP_NONE)
-  {
-    if (uiToneMapper != TONEMAP_HDR10_to_scRGB)
-    {
-      hdr_color.rgb =
-        //TM_Stanard (hdr_color.rgb);
-         RemoveSRGBCurve (
-           ACESFitted (hdr_color.rgb,
-                     input.color.x,
-                     input.color.y ));
-    }
-
-    // Make the pass-through actualy pass-through.
-    if (uiToneMapper == TONEMAP_HDR10_to_scRGB)
-    {
-      hdr_color.rgb  *= float3 (125.0, 125.0, 125.0);
-      hdr_color.rgb   =
-        min (hdr_color.rgb, 125.0f);
-
-      if (input.color.y != 1.0)
-      {
-        float fLuma =
-          dot (hdr_color.rgb, FastSign (hdr_color.rgb) * float3 (0.2126729, 0.7151522, 0.0721750));
-
-        // Clip to 0.35 nits, because lower than that produces garbage
-        if (fLuma < 0.004375)
-          hdr_color.rgb = 0;
-      }
-
-      input.color.y   = 1.0;
-      input.color.x   = 1.0;
-    }
-  }
-  else
-  {
-    hdr_color =
-      SK_ProcessColor4 (hdr_color, uiToneMapper);
-  }
-
-  if (uiToneMapper != TONEMAP_HDR10_to_scRGB)
-  {
-    if (input.color.y != 1.0f)
-    {
-      hdr_color.rgb =
-        PositivePow ( hdr_color.rgb,
-                    input.color.yyy );
-    }
+    hdr_color.rgb =
+      PositivePow ( hdr_color.rgb,
+                  input.color.yyy );
   }
 
   if (pqBoostParams.x > 0.1f)
@@ -268,115 +207,102 @@ main (PS_INPUT input) : SV_TARGET
       hdr_color.rgb = new_color;
   }
 
-  if (uiToneMapper != TONEMAP_HDR10_to_scRGB)
-  {
-    if ( hdrSaturation >= 1.0f + FLT_EPSILON ||
-         hdrSaturation <= 1.0f - FLT_EPSILON || uiToneMapper == TONEMAP_ACES_FILMIC )
-    {
-      float saturation =
-        hdrSaturation + 0.05 * ( uiToneMapper == TONEMAP_ACES_FILMIC );
 
-      hdr_color.rgb =
-        Saturation ( hdr_color.rgb,
-                     saturation );
-    }
+  if ( hdrSaturation >= 1.0f + FLT_EPSILON ||
+       hdrSaturation <= 1.0f - FLT_EPSILON || uiToneMapper == TONEMAP_ACES_FILMIC )
+  {
+    float saturation =
+      hdrSaturation + 0.05 * ( uiToneMapper == TONEMAP_ACES_FILMIC );
+
+    hdr_color.rgb =
+      Saturation ( hdr_color.rgb,
+                   saturation );
   }
 
   hdr_color.rgb *=
     input.color.xxx;
 
-  float fLuma = 0.0f;
-
-  if (visualFunc.x != VISUALIZE_NONE) // Expand Gamut before visualization
-  {
-    if (hdrGamutExpansion > 0.0f)
-    {
-      //hdr_color.rgb =
-      //  expandGamut (hdr_color.rgb, hdrGamutExpansion);
-    }
-  }
-
-  fLuma =
-    max (Luminance (hdr_color.rgb), 0.0);
-
   if ( visualFunc.x >= VISUALIZE_REC709_GAMUT &&
        visualFunc.x <  VISUALIZE_GRAYSCALE )
   {
+
+    if (hdrGamutExpansion > 0.0f)
+    {
+      hdr_color.rgb =
+        expandGamut(hdr_color.rgb, hdrGamutExpansion);
+    }
+
+    // Copied from real output, does this change anything?
+    {
+      hdr_color =
+        float4 (
+          Clamp_scRGB_StripNaN (hdr_color.rgb),
+                      saturate (hdr_color.a)
+                      );
+
+      hdr_color.r *= (orig_color.r >= FLT_EPSILON);
+      hdr_color.g *= (orig_color.g >= FLT_EPSILON);
+      hdr_color.b *= (orig_color.b >= FLT_EPSILON);
+    }
+
     int cs = visualFunc.x - VISUALIZE_REC709_GAMUT;
 
-    float3 r = SK_Color_xyY_from_RGB ( _ColorSpaces [cs], float3 (1.f, 0.f, 0.f) ),
-           g = SK_Color_xyY_from_RGB ( _ColorSpaces [cs], float3 (0.f, 1.f, 0.f) ),
-           b = SK_Color_xyY_from_RGB ( _ColorSpaces [cs], float3 (0.f, 0.f, 1.f) ),
-           w = SK_Color_xyY_from_RGB ( _ColorSpaces [cs], float3 (D65,             hdrLuminance_MaxLocal / 80.0) );
+    float3 r = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(1.f, 0.f, 0.f));
+    float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
+    float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
 
-    float3 vColor_xyY =
-         SK_Color_xyY_from_RGB ( _ColorSpaces [cs], normalize (hdr_color.rgb) );
+    float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[cs], normalize(hdr_color.rgb));
 
     float3 vTriangle [] = {
       r, g, b
     };
 
-    // For time-based glow
-    float fScale = 1.0f;
 
-    float3 fDistField =
-      float3 (
-        distance ( r, vColor_xyY ),
-        distance ( g, vColor_xyY ),
-        distance ( b, vColor_xyY )
-      );
-
-    fDistField.x = IsNan (fDistField.x) ? 0 : fDistField.x;
-    fDistField.y = IsNan (fDistField.y) ? 0 : fDistField.y;
-    fDistField.z = IsNan (fDistField.z) ? 0 : fDistField.z;
-
-    bool bContained =
-      SK_Triangle_ContainsPoint ( vColor_xyY,
-        vTriangle ) &&            vColor_xyY.x !=
-                                  vColor_xyY.y;
-
-    if (bContained)
+    float3 vDist;
     {
+      if (SK_Triangle_ContainsPoint(vColor_xyY, vTriangle) && vColor_xyY.x != vColor_xyY.y)
+      {
+        vDist = (hdrLuminance_MaxAvg / 320.0) * Luminance(hdr_color.rgb);
+      }
+      else
+      {
+        float3 fDistField =
+          float3(
+            distance(r, vColor_xyY),
+            distance(g, vColor_xyY),
+            distance(b, vColor_xyY)
+          );
+
+        fDistField.x = IsNan(fDistField.x) ? 0 : fDistField.x;
+        fDistField.y = IsNan(fDistField.y) ? 0 : fDistField.y;
+        fDistField.z = IsNan(fDistField.z) ? 0 : fDistField.z;
+        vDist = fDistField;
+      }
     }
 
-    float3 vDist =
-      bContained ? (hdrLuminance_MaxAvg / 320.0) * Luminance (hdr_color.rgb) : fDistField;
-
-    return
-      FinalOutput (float4 (vDist, 1.0f));
+    return FinalOutput(float4 (vDist, 1.0f));
   }
 
 
   float4 color_out;
 
   // Extra clipping and gamut expansion logic for regular display output
-  if (visualFunc.x == VISUALIZE_NONE)
+  if (hdrGamutExpansion > 0.0f)
   {
-    if (hdrGamutExpansion > 0.0f)
-    {
-      color_out.rgb =
-        expandGamut (hdr_color.rgb, hdrGamutExpansion);
-    }
-
-
-    color_out =
-      float4 (
-        Clamp_scRGB_StripNaN (color_out.rgb),
-                    saturate (hdr_color.a)
-             );
-
-    color_out.r *= (orig_color.r >= FLT_EPSILON);
-    color_out.g *= (orig_color.g >= FLT_EPSILON);
-    color_out.b *= (orig_color.b >= FLT_EPSILON);
+    color_out.rgb =
+      expandGamut (hdr_color.rgb, hdrGamutExpansion);
   }
-  else
-  {
-    color_out =
-      float4 (
-        Clamp_scRGB (hdr_color.rgb),
-           saturate (hdr_color.a)
-             );
-  }
+
+
+  color_out =
+    float4 (
+      Clamp_scRGB_StripNaN (color_out.rgb),
+                  saturate (hdr_color.a)
+           );
+
+  color_out.r *= (orig_color.r >= FLT_EPSILON);
+  color_out.g *= (orig_color.g >= FLT_EPSILON);
+  color_out.b *= (orig_color.b >= FLT_EPSILON);
 
   return
     FinalOutput (color_out);

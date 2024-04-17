@@ -272,18 +272,18 @@ static const SK_ColorSpace _sRGB =
   0.00f, 0.00f, 0.0f,
 };
 
-static const SK_ColorSpace _Rec2020 =
-{
-  0.708f, 0.292f,  0.1700f,  0.797f, 0.131f, 0.046f,
-     D65, 1.000f - 0.3127f - 0.329f,
-  0.0f, 0.000f,  0.0000f,
-};
-
 static const SK_ColorSpace _DCI_P3 =
 {
   0.68f, 0.32f,  0.2650f,  0.690f,   0.150f, 0.060f,
     D65, 1.00f - 0.3127f - 0.329f,
   0.00f, 0.00f,  0.0000f,
+};
+
+static const SK_ColorSpace _Rec2020 =
+{
+  0.708f, 0.292f,  0.1700f,  0.797f, 0.131f, 0.046f,
+     D65, 1.000f - 0.3127f - 0.329f,
+  0.0f, 0.000f,  0.0000f,
 };
 
 static const SK_ColorSpace _ColorSpaces [] = {
