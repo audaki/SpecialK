@@ -268,9 +268,9 @@ main (PS_INPUT input) : SV_TARGET
       {
         float3 fDistField =
           float3(
-            distance(r, vColor_xyY),
-            distance(g, vColor_xyY),
-            distance(b, vColor_xyY)
+            distance(r, vColor_xyY.r),
+            distance(g, vColor_xyY.g),
+            distance(b, vColor_xyY.b)
           );
 
         fDistField.x = IsNan(fDistField.x) ? 0 : fDistField.x;
