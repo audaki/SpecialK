@@ -270,19 +270,18 @@ main (PS_INPUT input) : SV_TARGET
       }
       else
       {
-        vDist = (hdrLuminance_MaxAvg / 320.0) * Luminance(hdr_color.rgb);
         // colored = overshoot
-//        float3 fDistField =
-//          float3(
-//            distance(r, vColor_xyY),
-//            distance(g, vColor_xyY),
-//            distance(b, vColor_xyY)
-//          );
-//
-//        fDistField.x = IsNan(fDistField.x) ? 0 : fDistField.x;
-//        fDistField.y = IsNan(fDistField.y) ? 0 : fDistField.y;
-//        fDistField.z = IsNan(fDistField.z) ? 0 : fDistField.z;
-//        vDist = fDistField;
+        float3 fDistField =
+          float3(
+            distance(r, vColor_xyY),
+            distance(g, vColor_xyY),
+            distance(b, vColor_xyY)
+          );
+
+        fDistField.x = IsNan(fDistField.x) ? 0 : fDistField.x;
+        fDistField.y = IsNan(fDistField.y) ? 0 : fDistField.y;
+        fDistField.z = IsNan(fDistField.z) ? 0 : fDistField.z;
+        vDist = fDistField;
       }
     }
 

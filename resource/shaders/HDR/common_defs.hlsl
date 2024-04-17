@@ -1913,8 +1913,7 @@ SK_Triangle_ContainsPoint ( float3 pt, float3 vTriangle [3] )
     SK_Triangle_Barycentric ( pt, vTriangle );
 
   return (
-    vBary.x >= 0.0 && vBary.y  >= 0.0 &&
-   (vBary.x         + vBary.y) <  1.0
+    vBary.x >= 0.0 && vBary.y  >= 0.0 && vBary.z >= 0.0
   );
 }
 
