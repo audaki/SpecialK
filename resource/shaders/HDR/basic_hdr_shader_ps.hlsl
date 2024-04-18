@@ -244,7 +244,7 @@ main (PS_INPUT input) : SV_TARGET
           (orig_color.g > FP16_MIN) +
           (orig_color.b > FP16_MIN) > 0.0f );
 
-      hdr_color = FinalOutput (hdr_color);
+      //hdr_color = FinalOutput (hdr_color);
       //hdr_color.rgb = clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
       //hdr_color.rgb *= smoothstep (0.006978, 0.016667, hdr_color.rgb);
     }
