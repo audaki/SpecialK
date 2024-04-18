@@ -320,12 +320,9 @@ main (PS_INPUT input) : SV_TARGET
            );
 
 
-  color_out.rgba = float4(0.0f, 0.0f, 0.0f, 0.0f);
-  color_out.g    = 1.0f / color_out.r;
-  //color_out.a = 1;
-  //color_out.r *= (orig_color.r >= FLT_EPSILON);
-  //color_out.g *= (orig_color.g >= FLT_EPSILON);
-  //color_out.b *= (orig_color.b >= FLT_EPSILON);
+  color_out.r *= !(isnan(color_out.r) || isinf(color_out.r);
+  color_out.g *= !(isnan(color_out.g) || isinf(color_out.g);
+  color_out.b *= !(isnan(color_out.b) || isinf(color_out.b);
 
   return
     FinalOutput (color_out);
