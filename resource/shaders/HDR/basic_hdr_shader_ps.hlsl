@@ -320,9 +320,9 @@ main (PS_INPUT input) : SV_TARGET
            );
 
 
-  color_out.r *= !(isnan(color_out.r) || isinf(color_out.r);
-  color_out.g *= !(isnan(color_out.g) || isinf(color_out.g);
-  color_out.b *= !(isnan(color_out.b) || isinf(color_out.b);
+  color_out.r *= !(isnan(color_out.r) || isinf(color_out.r));
+  color_out.g *= !(isnan(color_out.g) || isinf(color_out.g));
+  color_out.b *= !(isnan(color_out.b) || isinf(color_out.b));
 
   return
     FinalOutput (color_out);
