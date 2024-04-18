@@ -319,15 +319,13 @@ main (PS_INPUT input) : SV_TARGET
                   saturate (hdr_color.a)
            );
 
-  if (orig_color.r < FLT_EPSILON) {
-    color_out.r = 0;
-  }
-  if (orig_color.g < FLT_EPSILON) {
-    color_out.g = 0;
-  }
-  if (orig_color.b < FLT_EPSILON) {
-    color_out.b = 0;
-  }
+
+  //color_out.rgba = 0.0f;
+  //color_out.g    = 1.0f / color_out.r;
+  color_out.a = 1;
+  //color_out.r *= (orig_color.r >= FLT_EPSILON);
+  //color_out.g *= (orig_color.g >= FLT_EPSILON);
+  //color_out.b *= (orig_color.b >= FLT_EPSILON);
 
   return
     FinalOutput (color_out);
