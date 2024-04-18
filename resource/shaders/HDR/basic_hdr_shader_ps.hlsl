@@ -237,7 +237,7 @@ main (PS_INPUT input) : SV_TARGET
 
     // Copied from real output, does this change anything?
     {
-      hdr_color = float4 (Clamp_scRGB_StripNaN (hdr_color.rgb),saturate (hdr_color.a));
+      //hdr_color = float4 (Clamp_scRGB_StripNaN (hdr_color.rgb),saturate (hdr_color.a));
 
       hdr_color.rgb *=
         ( (orig_color.r > FP16_MIN) +
