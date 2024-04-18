@@ -238,9 +238,9 @@ main (PS_INPUT input) : SV_TARGET
     {
       hdr_color = float4 (Clamp_scRGB_StripNaN (hdr_color.rgb),saturate (hdr_color.a));
 
-      //hdr_color.r *= (orig_color.r >= FLT_EPSILON);
-      //hdr_color.g *= (orig_color.g >= FLT_EPSILON);
-      //hdr_color.b *= (orig_color.b >= FLT_EPSILON);
+      hdr_color.r *= (orig_color.r >= FLT_EPSILON);
+      hdr_color.g *= (orig_color.g >= FLT_EPSILON);
+      hdr_color.b *= (orig_color.b >= FLT_EPSILON);
 
       //hdr_color = FinalOutput (hdr_color);
       //hdr_color.rgb = clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
@@ -319,9 +319,9 @@ main (PS_INPUT input) : SV_TARGET
                   saturate (hdr_color.a)
            );
 
-  color_out.r *= (orig_color.r >= FLT_EPSILON);
-  color_out.g *= (orig_color.g >= FLT_EPSILON);
-  color_out.b *= (orig_color.b >= FLT_EPSILON);
+  //color_out.r *= (orig_color.r >= FLT_EPSILON);
+  //color_out.g *= (orig_color.g >= FLT_EPSILON);
+  //color_out.b *= (orig_color.b >= FLT_EPSILON);
 
   return
     FinalOutput (color_out);
