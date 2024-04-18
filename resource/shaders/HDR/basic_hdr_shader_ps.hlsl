@@ -254,21 +254,25 @@ main (PS_INPUT input) : SV_TARGET
 
     int cs = visualFunc.x - VISUALIZE_REC709_GAMUT;
 
-    float3 r = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(1.f, 0.f, 0.f));
-    float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
-    float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
+    //float3 r = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(1.f, 0.f, 0.f));
+    //float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
+    //float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
+    float3 r = float3(_ColorSpaces[cs].xr, _ColorSpaces[cs].yr, 0);
+    float3 g = float3(_ColorSpaces[cs].xg, _ColorSpaces[cs].yg, 0);
+    float3 b = float3(_ColorSpaces[cs].xb, _ColorSpaces[cs].yb, 0);
 
     float3 vColor_XYZ = RGB_to_XYZ(hdr_color.rgb);
-    float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
+    //float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
     //float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[cs], hdr_color.rgb);
+    float3 vColor_xyY = float3 ( vColor_XYZ.x / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ), vColor_XYZ.y / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ), 1.0 - ( vColor_XYZ.x / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) ) - ( vColor_XYZ.y / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) ) );
 
-    //float3 vColor_xyY = float3 ( vColor_XYZ.x / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ), vColor_XYZ.y / (           vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ), 1.0 - ( vColor_XYZ.x / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) ) - ( vColor_XYZ.y / ( vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z ) ) );
+    r.z = 0;
+    g.z = 0;
+    b.z = 0;
+    vColor_xyY.z = 0;
 
 
-
-    //float3 vTriangle[] = {r, g, b};
-    float3 vTriangle[] = {float3(5,5,0), float3(5,0,0), float3(0,0,0)};
-    vColor_xyY = float3(5,5,-0.01);
+    float3 vTriangle[] = {r, g, b};
 
     float3 output_color;
     {
