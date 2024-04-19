@@ -182,12 +182,7 @@ float3 REC709toREC2020 (float3 c);
 float3 Clamp_scRGB (float3 c)
 {
   // Clamp to Rec 2020
-  c = REC709toREC2020(c);
-  c.r = clamp(c.r, 0.0f, 1.0f);
-  c.b = clamp(c.b, 0.0f, 1.0f);
-  c.g = clamp(c.g, 0.0f, 1.0f);
-
-  return REC2020toREC709(c);
+  return clamp(REC2020toREC709(max(REC709toREC2020(c), 0.0f)), 0.0f, 1.0f);
 }
 
 float3 Clamp_scRGB_StripNaN (float3 c)
