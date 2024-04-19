@@ -239,32 +239,35 @@ main (PS_INPUT input) : SV_TARGET
     {
       //hdr_color = float4 (Clamp_scRGB_StripNaN (hdr_color.rgb),saturate (hdr_color.a));
 
-      hdr_color.rgb *= ( 1.0f > 0.0f );
+      // 0 => i.e. true black seems to get mapped outside of Rec.709 / P3
+      //hdr_color.rgb *=
+      //  ( (orig_color.r > FP16_MIN) +
+      //    (orig_color.g > FP16_MIN) +
+      //    (orig_color.b > FP16_MIN) > 0.0f );
 
-      //hdr_color = FinalOutput (hdr_color);
+      hdr_color = FinalOutput (hdr_color);
       //hdr_color.rgb = clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
       //hdr_color.rgb *= smoothstep (0.006978, 0.016667, hdr_color.rgb);
     }
 
     int cs = visualFunc.x - VISUALIZE_REC709_GAMUT;
 
-    //float3 r = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(1.f, 0.f, 0.f));
-    //float3 g = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 1.f, 0.f));
-    //float3 b = SK_Color_xyY_from_RGB(_ColorSpaces[cs], float3(0.f, 0.f, 1.f));
     float3 r = float3(_ColorSpaces[cs].xr, _ColorSpaces[cs].yr, 0);
     float3 g = float3(_ColorSpaces[cs].xg, _ColorSpaces[cs].yg, 0);
     float3 b = float3(_ColorSpaces[cs].xb, _ColorSpaces[cs].yb, 0);
 
-    float3 vColor_XYZ = sRGBtoXYZ(hdr_color.rgb);
-    //float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[0], hdr_color.rgb);
-    //float3 vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[cs], hdr_color.rgb);
-    float3 vColor_xyY = float3(vColor_XYZ.x / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), vColor_XYZ.y / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), 0);
-    //float3 vColor_xyY = hdr_color.rgb;
 
-    r.z = 0;
-    g.z = 0;
-    b.z = 0;
-    vColor_xyY.z = 0;
+    float3 vColor_xyY;
+    if (visualFunc.y == 1)
+    {
+      vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[2], hdr_color.rgb);
+      vColor_xyY.z = 0;
+    }
+    else
+    {
+      float3 vColor_XYZ = sRGBtoXYZ(hdr_color.rgb);
+      vColor_xyY = float3(vColor_XYZ.x / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), vColor_XYZ.y / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), 0);
+    }
 
 
     float3 vTriangle[] = {r, g, b};
