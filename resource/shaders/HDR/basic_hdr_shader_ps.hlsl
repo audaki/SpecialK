@@ -240,7 +240,7 @@ main (PS_INPUT input) : SV_TARGET
       //hdr_color = float4 (Clamp_scRGB_StripNaN (hdr_color.rgb),saturate (hdr_color.a));
 
       // 0 => i.e. true black seems to get mapped outside of Rec.709 / P3
-      hdr_color.rgb = float3(0.0, 0.0, 0.0);
+      hdr_color.rgb *= false;
 
       hdr_color = FinalOutput (hdr_color);
       //hdr_color.rgb = clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
