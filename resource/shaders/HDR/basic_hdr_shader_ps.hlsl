@@ -237,26 +237,28 @@ main (PS_INPUT input) : SV_TARGET
 
     // Copied from real output, does this change anything?
     {
-      hdr_color = float4 (Clamp_scRGB_StripNaN (hdr_color.rgb),saturate (hdr_color.a));
 
-      // 0 => i.e. true black seems to get mapped outside of Rec.709 / P3
-      hdr_color.rgb *=
-        ( (orig_color.r > FP16_MIN) +
-          (orig_color.g > FP16_MIN) +
-          (orig_color.b > FP16_MIN) > 0.0f );
+      float4 analyze_color = hdr_color;
 
       if (visualFunc.y == 1)
       {
-       //hdr_color.rgb =
-       //  clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
+        analyze_color = float4 (Clamp_scRGB_StripNaN (analyze_color.rgb),saturate (analyze_color.a));
 
-//        hdr_color.rgb *=
+        // 0 => i.e. true black seems to get mapped outside of Rec.709 / P3
+        analyze_color.rgb *=
+          ( (orig_color.r > FP16_MIN) +
+            (orig_color.g > FP16_MIN) +
+            (orig_color.b > FP16_MIN) > 0.0f );
+       //analyze_color.rgb =
+       //  clamp (LinearToPQ (REC709toREC2020 (analyze_color.rgb), 125.0f), 0.0, 1.0);
+
+//        analyze_color.rgb *=
 //          smoothstep ( 0.006978,
-//                       0.016667, hdr_color.rgb) + FLT_EPSILON;
+//                       0.016667, analyze_color.rgb) + FLT_EPSILON;
+        analyze_color = FinalOutput(analyze_color);
       }
-      hdr_color = FinalOutput(hdr_color);
-      //hdr_color.rgb = clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
-      //hdr_color.rgb *= smoothstep (0.006978, 0.016667, hdr_color.rgb);
+      //analyze_color.rgb = clamp (LinearToPQ (REC709toREC2020 (analyze_color.rgb), 125.0f), 0.0, 1.0);
+      //analyze_color.rgb *= smoothstep (0.006978, 0.016667, analyze_color.rgb);
     }
 
     int cs = visualFunc.x - VISUALIZE_REC709_GAMUT;
@@ -270,15 +272,15 @@ main (PS_INPUT input) : SV_TARGET
     //if (false)
     if (visualFunc.y == 1)
     {
-      //vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[2], hdr_color.rgb);
+      //vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[2], analyze_color.rgb);
       //vColor_xyY.z = 0;
 
-      float3 vColor_XYZ = sRGBtoXYZ(REC2020toREC709(PQToLinear(hdr_color.rgb, 125.0f)));
+      float3 vColor_XYZ = sRGBtoXYZ(REC2020toREC709(PQToLinear(analyze_color.rgb, 125.0f)));
       vColor_xyY = float3(vColor_XYZ.x / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), vColor_XYZ.y / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), 0);
     }
     else
     {
-      float3 vColor_XYZ = sRGBtoXYZ(hdr_color.rgb);
+      float3 vColor_XYZ = sRGBtoXYZ(analyze_color.rgb);
       vColor_xyY = float3(vColor_XYZ.x / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), vColor_XYZ.y / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), 0);
     }
 
@@ -296,6 +298,9 @@ main (PS_INPUT input) : SV_TARGET
       }
       else
       {
+        float3 vColor_XYZ = sRGBtoXYZ(hdr_color.rgb);
+        vColor_xyY = float3(vColor_XYZ.x / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), vColor_XYZ.y / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), 0);
+
         // colored = overshoot
         float3 fDistField =
           float3(
