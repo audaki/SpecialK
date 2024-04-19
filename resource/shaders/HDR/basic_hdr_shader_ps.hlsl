@@ -325,55 +325,8 @@ main (PS_INPUT input) : SV_TARGET
   }
 
 
-  color_out =
-    float4 (
-      Clamp_scRGB_StripNaN (color_out.rgb),
-                  saturate (hdr_color.a)
-           );
-
-
-  color_out.rgb *=
-    ( (orig_color.r > FP16_MIN) +
-      (orig_color.g > FP16_MIN) +
-      (orig_color.b > FP16_MIN) > 0.0f );
-
-  //if (isnan(color_out.r)) {
-  //  color_out.r = 0.5f;
-  //}
-  //if (isinf(color_out.r)) {
-  //  color_out.r = 0.5f;
-  //}
-
-  //if (isnan(color_out.g)) {
-  //  color_out.g = 0.5f;
-  //}
-  //if (isinf(color_out.g)) {
-  //  color_out.g = 0.5f;
-  //}
-
-  //if (isnan(color_out.b)) {
-  //  color_out.b = 0.5f;
-  //}
-  //if (isinf(color_out.b)) {
-  //  color_out.b = 0.5f;
-  //}
-
-  //if (color_out.r < 0.0f) { color_out.r = 0.0f; }
-  //if (color_out.b < 0.0f) { color_out.b = 0.0f; }
-  //if (color_out.g < 0.0f) { color_out.g = 0.0f; }
-
-
-
-    {
-    color_out.rgb =
-      clamp(LinearToPQ (REC709toREC2020 (color_out.rgb), 125.0f), 0.0, 1.0);
-
-    color_out.rgb *=
-      smoothstep ( 0.006978,
-                   0.016667, color_out.rgb);
-
-    color_out.a = 1.0;
-    }
+  //color_out = float4(Clamp_scRGB_StripNaN (color_out.rgb), saturate(hdr_color.a));
+  //color_out.rgb *= ((orig_color.r > FP16_MIN) + (orig_color.g > FP16_MIN) + (orig_color.b > FP16_MIN) > 0.0f );
 
 
   return
