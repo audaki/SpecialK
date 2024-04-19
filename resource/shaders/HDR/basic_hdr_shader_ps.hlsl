@@ -247,14 +247,14 @@ main (PS_INPUT input) : SV_TARGET
 
       if (visualFunc.y == 1)
       {
-        hdr_color.rgb =
-          clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
+       //hdr_color.rgb =
+       //  clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
 
 //        hdr_color.rgb *=
 //          smoothstep ( 0.006978,
 //                       0.016667, hdr_color.rgb) + FLT_EPSILON;
       }
-      //hdr_color = FinalOutput(hdr_color);
+      hdr_color = FinalOutput(hdr_color);
       //hdr_color.rgb = clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
       //hdr_color.rgb *= smoothstep (0.006978, 0.016667, hdr_color.rgb);
     }
@@ -267,11 +267,14 @@ main (PS_INPUT input) : SV_TARGET
 
 
     float3 vColor_xyY;
-    if (false)
-    //if (visualFunc.y == 1)
+    //if (false)
+    if (visualFunc.y == 1)
     {
-      vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[2], hdr_color.rgb);
-      vColor_xyY.z = 0;
+      //vColor_xyY = SK_Color_xyY_from_RGB(_ColorSpaces[2], hdr_color.rgb);
+      //vColor_xyY.z = 0;
+
+      float3 vColor_XYZ = sRGBtoXYZ(REC2020toREC709(PQToLinear(hdr_color.rgb, 125.0f)));
+      vColor_xyY = float3(vColor_XYZ.x / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), vColor_XYZ.y / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), 0);
     }
     else
     {
@@ -325,11 +328,8 @@ main (PS_INPUT input) : SV_TARGET
   }
 
 
-  //color_out = float4(Clamp_scRGB_StripNaN (color_out.rgb), saturate(hdr_color.a));
-  color_out.rgb = clamp(color_out.rgb, -0.5, 7.4999);
-  //color_out.rgb *= ((orig_color.r > FP16_MIN) + (orig_color.g > FP16_MIN) + (orig_color.b > FP16_MIN) > 0.0f );
+  color_out = float4(Clamp_scRGB_StripNaN (color_out.rgb), saturate(hdr_color.a));
+  color_out.rgb *= ((orig_color.r > FP16_MIN) + (orig_color.g > FP16_MIN) + (orig_color.b > FP16_MIN) > 0.0f );
 
-
-  return
-    FinalOutput (color_out);
+  return FinalOutput (color_out);
 }
