@@ -326,6 +326,7 @@ main (PS_INPUT input) : SV_TARGET
 
 
   //color_out = float4(Clamp_scRGB_StripNaN (color_out.rgb), saturate(hdr_color.a));
+  color_out.rgb = clamp(color_out.rgb, -0.5, 7.4999);
   //color_out.rgb *= ((orig_color.r > FP16_MIN) + (orig_color.g > FP16_MIN) + (orig_color.b > FP16_MIN) > 0.0f );
 
 
