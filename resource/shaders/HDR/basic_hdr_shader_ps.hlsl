@@ -332,10 +332,31 @@ main (PS_INPUT input) : SV_TARGET
            );
 
 
-  color_out.rgb *=
-    ( (orig_color.r > FP16_MIN) +
-      (orig_color.g > FP16_MIN) +
-      (orig_color.b > FP16_MIN) > 0.0f );
+  //color_out.rgb *=
+  //  ( (orig_color.r > FP16_MIN) +
+  //    (orig_color.g > FP16_MIN) +
+  //    (orig_color.b > FP16_MIN) > 0.0f );
+
+  if (isnan(color_out.r)) {
+    color_out.r = 0.0f
+  }
+  if (isinf(color_out.r)) {
+    color_out.r = 1.0f
+  }
+
+  if (isnan(color_out.g)) {
+    color_out.r = 0.0f
+  }
+  if (isinf(color_out.g)) {
+    color_out.r = 1.0f
+  }
+
+  if (isnan(color_out.b)) {
+    color_out.r = 0.0f
+  }
+  if (isinf(color_out.b)) {
+    color_out.r = 1.0f
+  }
 
   return
     FinalOutput (color_out);
