@@ -247,8 +247,14 @@ main (PS_INPUT input) : SV_TARGET
 
       if (visualFunc.y == 1)
       {
-        hdr_color.rgb = REC709toREC2020(hdr_color.rgb);
+        hdr_color.rgb =
+          clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
+
+//        hdr_color.rgb *=
+//          smoothstep ( 0.006978,
+//                       0.016667, hdr_color.rgb) + FLT_EPSILON;
       }
+      //hdr_color = FinalOutput(hdr_color);
       //hdr_color.rgb = clamp (LinearToPQ (REC709toREC2020 (hdr_color.rgb), 125.0f), 0.0, 1.0);
       //hdr_color.rgb *= smoothstep (0.006978, 0.016667, hdr_color.rgb);
     }
