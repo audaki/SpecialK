@@ -235,10 +235,11 @@ main (PS_INPUT input) : SV_TARGET
         expandGamut(hdr_color.rgb, hdrGamutExpansion);
     }
 
+    float4 analyze_color = hdr_color;
+
     // Copied from real output, does this change anything?
     {
 
-      float4 analyze_color = hdr_color;
 
       if (visualFunc.y == 1)
       {
