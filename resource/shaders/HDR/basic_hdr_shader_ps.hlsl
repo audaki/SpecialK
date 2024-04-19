@@ -240,6 +240,7 @@ main (PS_INPUT input) : SV_TARGET
     // Copied from real output, does this change anything?
     {
 
+      analyze_color = float4 (Clamp_scRGB_StripNaN (analyze_color.rgb),saturate (analyze_color.a));
 
       if (visualFunc.y == 1)
       {
