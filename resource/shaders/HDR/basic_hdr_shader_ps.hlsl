@@ -364,10 +364,8 @@ main (PS_INPUT input) : SV_TARGET
 
 
 
-  color_out.rgb =
-    clamp (LinearToPQ (REC709toREC2020 (color_out.rgb), 125.0f), 0.0, 1.0);
 
-  color_out.rgb = REC2020toREC709(PQToLinear(color_out.rgb, 125.0f));
+  color_out.a = 1.0;
 
 
   return
