@@ -358,9 +358,9 @@ main (PS_INPUT input) : SV_TARGET
   //  color_out.b = 0.5f;
   //}
 
-  if (color_out.r < 0.0f) { color_out.r = 0.0f; }
-  if (color_out.b < 0.0f) { color_out.b = 0.0f; }
-  if (color_out.g < 0.0f) { color_out.g = 0.0f; }
+  //if (color_out.r < 0.0f) { color_out.r = 0.0f; }
+  //if (color_out.b < 0.0f) { color_out.b = 0.0f; }
+  //if (color_out.g < 0.0f) { color_out.g = 0.0f; }
 
 
 
