@@ -364,8 +364,16 @@ main (PS_INPUT input) : SV_TARGET
 
 
 
+    {
+    color_out.rgb =
+      clamp(LinearToPQ (REC709toREC2020 (color_out.rgb), 125.0f), 0.0, 1.0);
 
-  color_out.a = 1.0;
+    color_out.rgb *=
+      smoothstep ( 0.006978,
+                   0.016667, color_out.rgb);
+
+    color_out.a = 1.0;
+    }
 
 
   return
