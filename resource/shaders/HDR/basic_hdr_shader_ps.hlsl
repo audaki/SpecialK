@@ -332,31 +332,37 @@ main (PS_INPUT input) : SV_TARGET
            );
 
 
-  //color_out.rgb *=
-  //  ( (orig_color.r > FP16_MIN) +
-  //    (orig_color.g > FP16_MIN) +
-  //    (orig_color.b > FP16_MIN) > 0.0f );
+  color_out.rgb *=
+    ( (orig_color.r > FP16_MIN) +
+      (orig_color.g > FP16_MIN) +
+      (orig_color.b > FP16_MIN) > 0.0f );
 
-  if (isnan(color_out.r)) {
-    color_out.r = 0.5f;
-  }
-  if (isinf(color_out.r)) {
-    color_out.r = 0.5f;
-  }
+  //if (isnan(color_out.r)) {
+  //  color_out.r = 0.5f;
+  //}
+  //if (isinf(color_out.r)) {
+  //  color_out.r = 0.5f;
+  //}
 
-  if (isnan(color_out.g)) {
-    color_out.g = 0.5f;
-  }
-  if (isinf(color_out.g)) {
-    color_out.g = 0.5f;
-  }
+  //if (isnan(color_out.g)) {
+  //  color_out.g = 0.5f;
+  //}
+  //if (isinf(color_out.g)) {
+  //  color_out.g = 0.5f;
+  //}
 
-  if (isnan(color_out.b)) {
-    color_out.b = 0.5f;
-  }
-  if (isinf(color_out.b)) {
-    color_out.b = 0.5f;
-  }
+  //if (isnan(color_out.b)) {
+  //  color_out.b = 0.5f;
+  //}
+  //if (isinf(color_out.b)) {
+  //  color_out.b = 0.5f;
+  //}
+
+  if (color_out.r < 0.0f) { color_out.r = 0.0f; }
+  if (color_out.b < 0.0f) { color_out.b = 0.0f; }
+  if (color_out.g < 0.0f) { color_out.g = 0.0f; }
+
+
 
   return
     FinalOutput (color_out);
