@@ -338,24 +338,24 @@ main (PS_INPUT input) : SV_TARGET
   //    (orig_color.b > FP16_MIN) > 0.0f );
 
   if (isnan(color_out.r)) {
-    color_out.r = 0.0f
+    color_out.r = 0.0f;
   }
   if (isinf(color_out.r)) {
-    color_out.r = 1.0f
+    color_out.r = 1.0f;
   }
 
   if (isnan(color_out.g)) {
-    color_out.g = 0.0f
+    color_out.g = 0.0f;
   }
   if (isinf(color_out.g)) {
-    color_out.g = 1.0f
+    color_out.g = 1.0f;
   }
 
   if (isnan(color_out.b)) {
-    color_out.b = 0.0f
+    color_out.b = 0.0f;
   }
   if (isinf(color_out.b)) {
-    color_out.b = 1.0f
+    color_out.b = 1.0f;
   }
 
   return
