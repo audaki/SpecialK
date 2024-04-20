@@ -97,10 +97,6 @@ FinalOutput (float4 vColor)
     vColor.rgb =
       clamp (LinearToPQ (REC709toREC2020 (vColor.rgb), 125.0f), 0.0, 1.0);
 
-    vColor.rgb *=
-      smoothstep ( 0.006978,
-                   0.016667, vColor.rgb);
-
     vColor.a = 1.0;
   }
 
@@ -335,6 +331,9 @@ main (PS_INPUT input) : SV_TARGET
 
   color_out = float4(Clamp_scRGB_StripNaN (color_out.rgb), saturate(hdr_color.a));
   color_out.rgb *= ((orig_color.r > FP16_MIN) + (orig_color.g > FP16_MIN) + (orig_color.b > FP16_MIN) > 0.0f );
+
+
+  color_out.rgb = clamp (LinearToPQ (REC709toREC2020 (color_out.rgb), 125.0f), 0.0, 1.0);
 
   return FinalOutput (color_out);
 }
