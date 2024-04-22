@@ -315,8 +315,8 @@ main (PS_INPUT input) : SV_TARGET
         fDistField.z = IsNan(fDistField.z) ? 0 : fDistField.z;
         output_color = fDistField;
 
-        output_color = (hdrLuminance_MaxAvg / 320.0) * Luminance(hdr_color.rgb);
-        output_color.r = 1;
+        //output_color = (hdrLuminance_MaxAvg / 320.0) * Luminance(hdr_color.rgb);
+        //output_color.r = 1;
       }
     }
 
