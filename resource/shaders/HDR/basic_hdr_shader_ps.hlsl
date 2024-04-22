@@ -294,15 +294,20 @@ main (PS_INPUT input) : SV_TARGET
       }
       else
       {
-        float3 vColor_XYZ = sRGBtoXYZ(hdr_color.rgb);
-        vColor_xyY = float3(vColor_XYZ.x / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), vColor_XYZ.y / (vColor_XYZ.x + vColor_XYZ.y + vColor_XYZ.z), 0);
+        float3 XYZ;
+        XYZ = sRGBtoXYZ(float3(hdr_color.r, 0, 0));
+        float3 r_xy = float3(XYZ.x / (XYZ.x + XYZ.y + XYZ.z), XYZ.y / (XYZ.x + XYZ.y + XYZ.z), 0);
+        XYZ = sRGBtoXYZ(float3(0, hdr_color.g, 0));
+        float3 g_xy = float3(XYZ.x / (XYZ.x + XYZ.y + XYZ.z), XYZ.y / (XYZ.x + XYZ.y + XYZ.z), 0);
+        XYZ = sRGBtoXYZ(float3(0, 0, hdr_color.b));
+        float3 b_xy = float3(XYZ.x / (XYZ.x + XYZ.y + XYZ.z), XYZ.y / (XYZ.x + XYZ.y + XYZ.z), 0);
 
         // colored = overshoot
         float3 fDistField =
           float3(
-            distance(r, vColor_xyY),
-            distance(g, vColor_xyY),
-            distance(b, vColor_xyY)
+            distance(r, r_xy),
+            distance(g, g_xy),
+            distance(b, b_xy)
           );
 
         fDistField.x = IsNan(fDistField.x) ? 0 : fDistField.x;
@@ -331,9 +336,6 @@ main (PS_INPUT input) : SV_TARGET
 
   color_out = float4(Clamp_scRGB_StripNaN (color_out.rgb), saturate(hdr_color.a));
   color_out.rgb *= ((orig_color.r > FP16_MIN) + (orig_color.g > FP16_MIN) + (orig_color.b > FP16_MIN) > 0.0f );
-
-
-  color_out.rgb = clamp (LinearToPQ (REC709toREC2020 (color_out.rgb), 125.0f), 0.0, 1.0);
 
   return FinalOutput (color_out);
 }
